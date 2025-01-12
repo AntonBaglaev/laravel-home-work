@@ -1,23 +1,23 @@
 <?php
 
-use App\Http\Controllers\NewsController;
-use App\Http\Controllers\PdfGeneratorController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\MyUserController;
-use App\Http\Controllers\LogController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('user', [MyUserController::class, 'index']);
-Route::get('user/{id}', [MyUserController::class, 'get']);
-Route::get('show_form', [MyUserController::class, 'showForm']);
-Route::post('store_user', [MyUserController::class, 'store'])->name('post');
-Route::get('resume/{id}', [MyUserController::class, 'resume']);
-Route::get('pdf/{id}', [PdfGeneratorController::class, 'index'])->name('pdf');
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('logs', LogController::class);
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
-Route::get('/news/create-test', [NewsController::class, 'createTest']);
-Route::get('/news/{id}/hide', [NewsController::class, 'hiddenNews']);
+Route::get('/users', [UsersController::class, 'index']);
+
+require __DIR__.'/auth.php';
